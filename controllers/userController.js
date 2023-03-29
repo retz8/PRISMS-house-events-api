@@ -172,15 +172,15 @@ const updateUser = async (req, res) => {
     return res.status(400).json({ error: "User not found" });
   }
 
-  //check for duplicate
-  // const duplicate = await User.findOne({ email })
-  //   .collation({ locale: "en", strength: 2 })
-  //   .lean()
-  //   .exec();
-  // if (duplicate && duplicate?._id.toString() !== userId) {
-  //   // 409 status code: conflict
-  //   return res.status(409).json({ error: "Duplicate user" });
-  // }
+  // check for duplicate
+  const duplicate = await User.findOne({ email })
+    .collation({ locale: "en", strength: 2 })
+    .lean()
+    .exec();
+  if (duplicate && duplicate?._id.toString() !== userId) {
+    // 409 status code: conflict
+    return res.status(409).json({ error: "Duplicate user" });
+  }
 
   if (role === "HouseLeader") {
     if (grade !== "12" && grade !== "Faculty") {
@@ -193,7 +193,7 @@ const updateUser = async (req, res) => {
       role: "HouseLeader",
       grade: grade === "Faculty" ? "Faculty" : "12",
     });
-    if (roleDuplicate) {
+    if (roleDuplicate._id !== userId) {
       return res.status(409).json({ error: "Duplicate House Leader" });
     }
   }
@@ -227,20 +227,21 @@ const updateUser = async (req, res) => {
 // @route   DELETE /api/user/delete/:userId
 const deleteUser = async (req, res) => {
   const { userId } = req.params;
-
+  console.log(userId);
   if (!isValidObjectId(userId)) {
     return res.status(401).json({ error: "Invalid Request" });
   }
 
-  const events = await Event.find({ author: id }).lean().exec();
+  const events = await Event.find({ author: userId }).lean().exec();
   if (events) {
-    const { error } = await Event.deleteMany({ author: id });
+    const { error } = await Event.deleteMany({ author: userId });
     if (error) {
       return res
         .status(400)
         .json({ error: "Failed to remove events written by user" });
     }
   }
+  console.log("check");
 
   const user = await User.findById(userId).exec();
   if (!user) {
@@ -255,7 +256,7 @@ const deleteUser = async (req, res) => {
     return res.status(404).json({ error: "Could not remove user" });
   }
   console.log("find by id and delete");
-  await User.findByIdAndDelete(userId);
+  const deleteResult = await User.findByIdAndDelete(userId);
   res.json({ message: `User ${userId} removed successfully` });
 };
 
