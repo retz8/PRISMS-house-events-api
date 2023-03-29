@@ -31,8 +31,8 @@ app.set("trust proxy", 1);
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
+    secret: "watermelonsugarhot",
+    resave: true,
     saveUninitialized: true,
     cookie: { sameSite: "none", secure: true, maxAge: 1000 * 60 * 60 * 24 * 7 }, // uncomment this line for production
   })
