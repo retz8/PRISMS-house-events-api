@@ -60,9 +60,12 @@ app.get(
 // @route   GET /auth/google/callback
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login", session: true }),
+  passport.authenticate("google", {
+    failureRedirect: "/https://prisms-house-events-admin.onrender.com",
+    session: true,
+  }),
   function (req, res) {
-    res.redirect("https://prisms-house-events-admin.onrender.com/");
+    res.redirect("https://prisms-house-events-admin.onrender.com");
   }
 );
 
@@ -74,7 +77,7 @@ app.get("/auth/logout", (req, res) => {
       return next(err);
     }
     //res.send("done");
-    res.redirect("https://prisms-house-events-admin.onrender.com/");
+    res.redirect("https://prisms-house-events-admin.onrender.com");
   });
 });
 
