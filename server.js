@@ -64,11 +64,11 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "http://localhost:3000",
+    failureRedirect: "https://prisms-house-events-admin.onrender.com",
     session: true,
   }),
   function (req, res) {
-    res.redirect("http://localhost:3000");
+    res.redirect("https://prisms-house-events-admin.onrender.com");
   }
 );
 
@@ -80,7 +80,7 @@ app.get("/auth/logout", (req, res) => {
       return next(err);
     }
     //res.send("done");
-    res.redirect("http://localhost:3000");
+    res.redirect("https://prisms-house-events-admin.onrender.com");
   });
 });
 
