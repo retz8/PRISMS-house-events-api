@@ -6,7 +6,8 @@ const cors = require("cors");
 const passport = require("passport"); // for google auth
 const session = require("express-session"); // for google auth, create session
 const connectDB = require("./config/dbConn");
-const morgan = require("morgan");
+// const morgan = require("morgan");
+const corsOptions = require("./config/corsOptions");
 
 const userRouters = require("./routers/userRouters");
 const houseRouters = require("./routers/houseRouters");
@@ -17,19 +18,14 @@ const helperRouters = require("./routers/helperRouters");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-console.log(`Mode: ${process.env.NODE_ENV}`);
+// console.log(`Mode: ${process.env.NODE_ENV}`);
 connectDB();
 
 // MIDDLEWARES
 // -----------------------------------------------------------------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(
-  cors({
-    origin: "https://prisms-house-events-admin.onrender.com",
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -38,7 +34,7 @@ app.use(
     // cookie: {secure: true}, // uncomment this line for production
   })
 );
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 
 app.use(passport.initialize());
 app.use(passport.session()); // to use req.user from session
