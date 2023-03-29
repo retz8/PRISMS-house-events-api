@@ -45,6 +45,9 @@ require("./config/passport")(passport);
 
 // ROUTES
 // -----------------------------------------------------------------------------------
+app.get("^/$|/index(.html)?", (req, res) => {
+  res.send("hello");
+});
 // 1. /auth (due to passport, didn't separated into routers)
 // @desc    google Login
 // @route   GET /auth/google
