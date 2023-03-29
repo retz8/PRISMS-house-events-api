@@ -31,7 +31,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    // cookie: {secure: true}, // uncomment this line for production
+    cookie: { secure: true }, // uncomment this line for production
   })
 );
 // app.use(morgan("dev"));
