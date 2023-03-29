@@ -24,7 +24,12 @@ connectDB();
 // -----------------------------------------------------------------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(
+  cors({
+    origin: "https://prisms-house-events-admin.onrender.com",
+    credentials: true,
+  })
+);
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -58,7 +63,7 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login", session: true }),
   function (req, res) {
-    res.redirect("http://localhost:3000/");
+    res.redirect("https://prisms-house-events-admin.onrender.com/");
   }
 );
 
@@ -70,7 +75,7 @@ app.get("/auth/logout", (req, res) => {
       return next(err);
     }
     //res.send("done");
-    res.redirect("http://localhost:3000");
+    res.redirect("https://prisms-house-events-admin.onrender.com/");
   });
 });
 
