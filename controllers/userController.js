@@ -173,14 +173,14 @@ const updateUser = async (req, res) => {
   }
 
   //check for duplicate
-  const duplicate = await User.findOne({ email })
-    .collation({ locale: "en", strength: 2 })
-    .lean()
-    .exec();
-  if (duplicate && duplicate?._id.toString() !== userId) {
-    // 409 status code: conflict
-    return res.status(409).json({ error: "Duplicate user" });
-  }
+  // const duplicate = await User.findOne({ email })
+  //   .collation({ locale: "en", strength: 2 })
+  //   .lean()
+  //   .exec();
+  // if (duplicate && duplicate?._id.toString() !== userId) {
+  //   // 409 status code: conflict
+  //   return res.status(409).json({ error: "Duplicate user" });
+  // }
 
   if (role === "HouseLeader") {
     if (grade !== "12" && grade !== "Faculty") {
@@ -254,7 +254,7 @@ const deleteUser = async (req, res) => {
   if (result !== "ok") {
     return res.status(404).json({ error: "Could not remove user" });
   }
-
+  console.log("find by id and delete");
   await User.findByIdAndDelete(userId);
   res.json({ message: `User ${userId} removed successfully` });
 };

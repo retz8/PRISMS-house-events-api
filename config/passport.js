@@ -39,12 +39,9 @@ module.exports = function (passport) {
         const currentUser = await User.findOne({ googleId: profile.id });
         // create new user and store in DB if DB doesn't have current user
         if (!currentUser) {
-          console.log("check");
-          console.log(profile.photos[0].value);
           const { secure_url, public_id } = await cloudinary.uploader.upload(
             profile.photos[0].value
           );
-
           const newUser = {
             googleId: profile.id,
             displayName: profile.displayName,
