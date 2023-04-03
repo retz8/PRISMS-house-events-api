@@ -8,16 +8,12 @@ module.exports = function (passport) {
   // done: callback function
   // serialize: after Google auth is completed, store user in the session
   passport.serializeUser((user, done) => {
-    console.log("Serialize");
-    console.log(user._id);
     return done(null, user._id); // add user._id on session
   });
   // deserialize: after user is serialized, enables session's user information to be converted to req.user
   passport.deserializeUser(async (id, done) => {
     try {
       const user = await User.findById(id);
-      console.log("Deserialize");
-      console.log(user);
       return done(null, user);
     } catch (error) {
       return done(new Error("Failed to deserialize an user"));
@@ -51,7 +47,6 @@ module.exports = function (passport) {
             role: role,
             house: house,
           };
-          console.log(newUser);
           const user = await User.create(newUser);
           return done(null, user);
         }

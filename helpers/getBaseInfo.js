@@ -16,6 +16,8 @@ function getBaseInfo(username, email) {
     return { grade: "Faculty", role: "HouseLeader", house: "Hobler" };
   } else if (email === "kenneth.jones@prismsus.org") {
     return { grade: "Faculty", role: "Admin", house: "None" };
+  } else if (email === "adrian.lopezdenis@prismsus.org") {
+    return { grade: "Faculty", role: "Faculty", house: "Ettl" };
   }
 
   if (myMap.has(email)) {

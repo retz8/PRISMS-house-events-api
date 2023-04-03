@@ -6,9 +6,10 @@ const cors = require("cors");
 const passport = require("passport"); // for google auth
 const session = require("express-session"); // for google auth, create session
 const connectDB = require("./config/dbConn");
-// const morgan = require("morgan");
+const morgan = require("morgan"); // comment for prdouction
 const corsOptions = require("./config/corsOptions");
 
+const authRouters = require("./routers/authRouters");
 const userRouters = require("./routers/userRouters");
 const houseRouters = require("./routers/houseRouters");
 const eventRouters = require("./routers/eventRouters");
@@ -27,17 +28,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 app.use(
   session({
     secret: "watermelonsugarhot",
-    resave: true,
+    resave: false,
     saveUninitialized: true,
-    cookie: { sameSite: "none", secure: true, maxAge: 1000 * 60 * 60 * 24 * 7 }, // uncomment this line for production
+    // cookie: { sameSite: "none", secure: true, maxAge: 1000 * 60 * 60 * 24 * 7 }, // uncomment this line for production
   })
 );
-// app.use(morgan("dev"));
+app.use(morgan("dev"));
 
 app.use(passport.initialize());
 app.use(passport.session()); // to use req.user from session
@@ -64,11 +65,11 @@ app.get(
 app.get(
   "/auth/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "https://prisms-house-events-admin.onrender.com",
+    failureRedirect: "http://localhost:3000",
     session: true,
   }),
   function (req, res) {
-    res.redirect("https://prisms-house-events-admin.onrender.com");
+    res.redirect("http://localhost:3000");
   }
 );
 
@@ -80,7 +81,7 @@ app.get("/auth/logout", (req, res) => {
       return next(err);
     }
     //res.send("done");
-    res.redirect("https://prisms-house-events-admin.onrender.com");
+    res.redirect("http://localhost:3000");
   });
 });
 
@@ -90,6 +91,9 @@ app.get("/auth/user", (req, res) => {
   // req.user in cookie (deserialized user)
   res.send(req.user);
 });
+
+// 1.5 Mobile App Auth routers: /api/auth
+app.use("/api/auth", authRouters);
 
 // 2. /api/user
 app.use("/api/user", userRouters);

@@ -104,6 +104,31 @@ const getHouse = async (req, res) => {
   });
 };
 
+// @desc    Get house by Id
+// @route   GET /api/house/name/:houseName
+const getHouseByName = async (req, res) => {
+  const { houseName } = req.params;
+
+  if (!["Albemarle", "Lambert", "Hobler", "Ettl"].includes(houseName))
+    return res.status(401).json({ error: "Invalid Request" });
+
+  const house = await House.find({ name: houseName }).lean().exec();
+  if (!house) return res.status(404).json({ error: "House not found!" });
+  const { name, point, crest, motto, enMotto, color, createdAt } = house[0];
+  res.json({
+    house: {
+      id: house[0]._id,
+      name,
+      point,
+      crest,
+      motto,
+      enMotto,
+      color,
+      createdAt,
+    },
+  });
+};
+
 // @desc    Get house leaders by house name
 // @route   GET /api/house/leaders/:houseName
 const getLeaders = async (req, res) => {
@@ -246,6 +271,8 @@ const updateHousePoint = async (req, res) => {
   const { houseId } = req.params;
   const { point } = req.body;
 
+  console.log(point);
+
   if (!isValidObjectId(houseId)) {
     return res.status(401).json({ error: "Invalid Request" });
   }
@@ -294,6 +321,7 @@ const deleteHouse = async (req, res) => {
 module.exports = {
   getAllHouses,
   getHouse,
+  getHouseByName,
   getMembers,
   getLeaders,
   createNewHouse,

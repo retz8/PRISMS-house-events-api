@@ -39,6 +39,9 @@ const createNewEvent = async (req, res) => {
     slug,
   } = req.body;
 
+  console.log("Creatting...");
+  console.log(req.body);
+
   if (!title || !slug) {
     return res.status(400).json({ error: "Title and Slug are required" });
   }
@@ -76,10 +79,12 @@ const createNewEvent = async (req, res) => {
 
   let newThumbnail = thumbnail;
   if (isEqual(thumbnail, defaultThumbnail)) {
+    console.log("Event: Default Thumbnail");
     // create default logo in cloudinary
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       defaultThumbnail.url
     );
+    console.log("default thumbnail uploaded");
     newThumbnail = { url: secure_url, public_id };
   }
 
@@ -97,11 +102,20 @@ const createNewEvent = async (req, res) => {
   else newEvent.isForAll = true;
 
   const curDate = new Date();
+  // console.log(endDate);
+  // console.log(typeof endDate);
+  // console.log(curDate);
+  // console.log(typeof curDate);
+  // console.log(
+  //   endDate.toLocaleString("en-US", { timeZone: "America/New_York" })
+  // );
+  // console.log(
+  //   curDate.toLocaleString("en-US", { timeZone: "America/New_York" })
+  // );
 
-  if (
-    endDate.toLocaleString("en-US", { timeZone: "America/New_York" }) <
-    curDate.toLocaleString("en-US", { timeZone: "America/New_York" })
-  ) {
+  if (new Date(endDate) < curDate) {
+    // console.log("check");
+
     newEvent.upcoming = false;
   }
 
@@ -141,6 +155,7 @@ const getAllEvents = async (req, res) => {
       upcoming: event.upcoming,
       resultPosted: event.resultPosted,
       slug: event.slug,
+      createdAt: event.createdAt,
     })),
   });
 };
@@ -205,8 +220,8 @@ const updateEvent = async (req, res) => {
     resultPosted,
     slug,
   } = req.body;
-
-  // console.log(req.body);
+  console.log("Updating Object: ");
+  console.log(req.body);
 
   if (!isValidObjectId(eventId)) {
     return res.status(401).json({ error: "Invalid Request" });
@@ -232,6 +247,7 @@ const updateEvent = async (req, res) => {
 
   const public_id = event.thumbnail?.public_id;
   if (public_id && thumbnail.public_id !== public_id) {
+    // different thumbnail
     const { result } = await cloudinary.uploader.destroy(public_id);
     if (result !== "ok") {
       return res.status(404).json({ error: "Could not remove thumbnail" });
@@ -256,6 +272,7 @@ const updateEvent = async (req, res) => {
   if (resultPosted) event.resultPosted = resultPosted;
   event.slug = slug;
 
+  console.log("Updated Event: ");
   console.log(event);
 
   Event.updateOne({ _id: eventId }, event)
@@ -428,7 +445,6 @@ const getPastEvents = async (req, res) => {
 // @route   DELETE /api/event/delete/:eventId
 const deleteEvent = async (req, res) => {
   const { eventId } = req.params;
-  console.log(eventId);
   if (!isValidObjectId(eventId)) {
     return res.status(401).json({ error: "Invalid Request" });
   }
