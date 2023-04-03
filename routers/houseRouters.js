@@ -5,6 +5,7 @@ const multer = require("../middleware/multer");
 
 router.get("/houses", houseController.getAllHouses);
 router.get("/:houseId", houseController.getHouse);
+router.get("/name/:houseName", houseController.getHouseByName);
 router.get("/leaders/:houseName", houseController.getLeaders);
 router.get("/members/:houseName", houseController.getMembers);
 

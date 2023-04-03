@@ -11,6 +11,7 @@ const morgan = require("morgan");
 const userRouters = require("./routers/userRouters");
 const houseRouters = require("./routers/houseRouters");
 const eventRouters = require("./routers/eventRouters");
+const authRouters = require("./routers/authRouters");
 const helperRouters = require("./routers/helperRouters");
 // -----------------------------------------------------------------------------------
 // define important constants:
@@ -86,6 +87,8 @@ app.get("/auth/user", (req, res) => {
   res.send(req.user);
 });
 
+// 1.5 /api/auth for mobile
+app.use("/api/auth", authRouters);
 // 2. /api/user
 app.use("/api/user", userRouters);
 // 3. /api/house
