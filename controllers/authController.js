@@ -4,8 +4,8 @@ const cloudinary = require("../cloud/cloudinaryConfig");
 const { isValidObjectId } = require("mongoose");
 const getBaseInfo = require("../helpers/getBaseInfo");
 
-// @desc    Create new event
-// @route   POST /api/event/create
+// @desc    Create new user
+// @route   POST /api/auth/create
 const createNewUser = async (req, res) => {
   const { user } = req.body;
   const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
