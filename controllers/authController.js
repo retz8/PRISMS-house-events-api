@@ -1,47 +1,49 @@
 const Event = require("../models/Event");
 const User = require("../models/User");
 const cloudinary = require("../cloud/cloudinaryConfig");
-const getBaseInfo = require("../helpers/getBaseInfo");
 const { isValidObjectId } = require("mongoose");
+const getBaseInfo = require("../helpers/getBaseInfo");
 
-// @desc    Create new event
+// @desc    Create new user
 // @route   POST /api/auth/create
 const createNewUser = async (req, res) => {
-  //   console.log("req.bdoy:");
-  //   console.log(req.body);
-  const { id, email, name, picture } = req.body.user;
-  const accessToken = req.headers.authorization.split(" ")[1];
-  //res.json({ user: id });
-  const currentUser = await User.findOne({ googleId: id });
+  console.log(req.body);
+  const { user } = req.body;
+  const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
+
   if (!currentUser) {
-    // new user
-    const { secure_url, public_id } = await cloudinary.uploader.upload(picture);
+    // create new user
     const { grade, role, house } = getBaseInfo(
-      (username = name),
-      (email = email)
+      (username = user.name),
+      (email = user.email)
     );
+
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+      user.picture
+    );
+
     const newUser = {
-      googleId: id,
-      displayName: name,
-      email: email,
+      googleId: user.id,
+      displayName: user.name,
+      email: user.email,
       profilePic: { url: secure_url, public_id: public_id },
       grade: grade,
       role: role,
       house: house,
     };
-    const user = await User.create(newUser);
-    if (!user) {
-      res.status(400).json({ error: "Unable to create New User in Database" });
-    }
+
+    console.log(newUser);
+
+    const createdUser = await User.create(newUser);
     res.json({
-      id: user._id,
-      displayName: name,
-      email: email,
-      profilePic: user.profilePic,
-      introduction: user.introduction,
-      grade: grade,
-      role: role,
-      house: house,
+      id: createdUser._id,
+      displayName: createdUser.displayName,
+      email: createdUser.email,
+      profilePic: createdUser.profilePic,
+      introduction: createdUser.introduction,
+      grade: createdUser.grade,
+      role: createdUser.role,
+      house: createdUser.house,
     });
   }
   res.json({
