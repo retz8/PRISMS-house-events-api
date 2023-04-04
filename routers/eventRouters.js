@@ -4,6 +4,7 @@ const multer = require("../middleware/multer");
 const eventController = require("../controllers/eventController");
 
 router.get("/events", eventController.getAllEvents);
+router.get("/events-page", eventController.getEvents);
 router.get("/:eventId", eventController.getEvent);
 
 router.get("/upcoming", eventController.getUpcomingEvents);
