@@ -7,18 +7,21 @@ const getBaseInfo = require("../helpers/getBaseInfo");
 // @desc    Create new user
 // @route   POST /api/auth/create
 const createNewUser = async (req, res) => {
+  console.log(req.body);
   const { user } = req.body;
   const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
 
   if (!currentUser) {
     // create new user
-    const { secure_url, public_id } = await cloudinary.uploader.upload(
-      user.picture
-    );
     const { grade, role, house } = getBaseInfo(
       (username = user.name),
       (email = user.email)
     );
+
+    const { secure_url, public_id } = await cloudinary.uploader.upload(
+      user.picture
+    );
+
     const newUser = {
       googleId: user.id,
       displayName: user.name,
@@ -28,6 +31,9 @@ const createNewUser = async (req, res) => {
       role: role,
       house: house,
     };
+
+    console.log(newUser);
+
     const createdUser = await User.create(newUser);
     res.json({
       id: createdUser._id,
