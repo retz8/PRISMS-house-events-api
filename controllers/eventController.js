@@ -201,6 +201,52 @@ const getEvents = async (req, res) => {
   });
 };
 
+// @desc    Get events (for leadeboard, that has result) by page no and limit
+// @route   GET /api/event/events-filter
+const getFilteredEvents = async (req, res) => {
+  const { pageNum, limit } = req.query;
+
+  const events = await Event.find({
+    upcoming: false,
+    "resultPosted.waitingResult": false,
+  })
+    .sort({ createdAt: -1 })
+    .skip(parseInt(pageNum) * parseInt(limit))
+    .limit(parseInt(limit));
+  console.log("find: ");
+  console.log(events);
+
+  const eventCount = await Event.countDocuments();
+
+  if (!events?.length) {
+    return res.status(400).json({ error: "No Events Found" });
+  }
+
+  res.json({
+    events: events.map((event) => ({
+      id: event._id,
+      title: event.title,
+      author: event.author,
+      host: event.host,
+      tier: event.tier,
+      thumbnail: event.thumbnail,
+      summary: event.summary,
+      content: event.content,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      signUpLink: event.signUpLink,
+      participants: event.participants,
+      isForAll: event.isForAll,
+      adminNote: event.adminNote ? event.adminNote : "",
+      result: event.result ? event.result : {},
+      upcoming: event.upcoming,
+      resultPosted: event.resultPosted,
+      slug: event.slug,
+    })),
+    eventCount,
+  });
+};
+
 // @desc    Get all events
 // @route   GET /api/event/:eventId
 const getEvent = async (req, res) => {
@@ -511,6 +557,7 @@ module.exports = {
   createNewEvent,
   getAllEvents,
   getEvents,
+  getFilteredEvents,
   getEvent,
   updateEvent,
   getUpcomingEvents,
