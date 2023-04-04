@@ -45,17 +45,18 @@ const createNewUser = async (req, res) => {
       role: createdUser.role,
       house: createdUser.house,
     });
+  } else {
+    res.json({
+      id: currentUser._id,
+      displayName: currentUser.displayName,
+      email: currentUser.email,
+      profilePic: currentUser.profilePic,
+      introduction: currentUser.introduction,
+      grade: currentUser.grade,
+      role: currentUser.role,
+      house: currentUser.house,
+    });
   }
-  res.json({
-    id: currentUser._id,
-    displayName: currentUser.displayName,
-    email: currentUser.email,
-    profilePic: currentUser.profilePic,
-    introduction: currentUser.introduction,
-    grade: currentUser.grade,
-    role: currentUser.role,
-    house: currentUser.house,
-  });
 };
 
 module.exports = {
