@@ -130,7 +130,7 @@ const createNewEvent = async (req, res) => {
 // @desc    Get all events
 // @route   GET /api/event/events
 const getAllEvents = async (req, res) => {
-  const events = await Event.find().lean();
+  const events = await Event.find().sort({ createdAt: -1 }).lean();
   if (!events?.length) {
     return res.status(400).json({ error: "No Events Found" });
   }
