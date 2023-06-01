@@ -14,7 +14,7 @@ const createNewUser = async (req, res) => {
   //   res.status(400).json({ error: "Use PRISMS's email" });
   // }
 
-  if (user.hd !== "prismsus.org") {
+  if (user.email.endswith("@prismsus.org") === false) {
     console.log("error");
     res.status(400).json({ error: "Use PRISMS's email" });
   }
