@@ -14,9 +14,13 @@ const createNewUser = async (req, res) => {
   //   res.status(400).json({ error: "Use PRISMS's email" });
   // }
 
+  if (user.hd !== "prismsus.org") {
+    res.status(400).json({ error: "Use PRISMS's email" });
+  }
+
   const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
 
-  if (!currentUser && user.email.endswith("@prismsus.org")) {
+  if (!currentUser) {
     // create new user
     const { grade, role, house } = getBaseInfo(
       (username = user.name),
