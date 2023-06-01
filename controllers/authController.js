@@ -10,13 +10,13 @@ const createNewUser = async (req, res) => {
   console.log(req.body);
   const { user } = req.body;
 
-  if (!user.email.endswith("@prismsus.org")) {
-    res.status(400).json({ error: "Use PRISMS's email" });
-  }
+  // if (!user.email.endswith("@prismsus.org")) {
+  //   res.status(400).json({ error: "Use PRISMS's email" });
+  // }
 
   const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
 
-  if (!currentUser) {
+  if (!currentUser && user.email.endswith("@prismsus.org")) {
     // create new user
     const { grade, role, house } = getBaseInfo(
       (username = user.name),
