@@ -7,14 +7,15 @@ const getBaseInfo = require("../helpers/getBaseInfo");
 // @desc    Create new user
 // @route   POST /api/auth/create
 const createNewUser = async (req, res) => {
-  console.log(req.body);
   const { user } = req.body;
+  console.log(user.hd);
 
   // if (!user.email.endswith("@prismsus.org")) {
   //   res.status(400).json({ error: "Use PRISMS's email" });
   // }
 
   if (user.hd !== "prismsus.org") {
+    console.log("error");
     res.status(400).json({ error: "Use PRISMS's email" });
   }
 
