@@ -8,21 +8,16 @@ const getBaseInfo = require("../helpers/getBaseInfo");
 // @route   POST /api/auth/create
 const createNewUser = async (req, res) => {
   const { user } = req.body;
-  console.log(req.body);
+  console.log(user);
 
   // if (!user.email.endswith("@prismsus.org")) {
   //   res.status(400).json({ error: "Use PRISMS's email" });
   // }
   const domain = "prismsus.org";
 
-  if (user.email.endswith(domain) === false) {
-    console.log("error");
-    res.status(400).json({ error: "Use PRISMS's email" });
-  }
-
   const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
 
-  if (!currentUser) {
+  if (!currentUser && user.hd === domain) {
     // create new user
     const { grade, role, house } = getBaseInfo(
       (username = user.name),
