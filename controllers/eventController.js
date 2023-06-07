@@ -78,6 +78,8 @@ const createNewEvent = async (req, res) => {
   };
 
   let newThumbnail = thumbnail;
+  console.log(defaultThumbnail);
+  console.log(newThumbnail);
   if (isEqual(thumbnail, defaultThumbnail)) {
     console.log("Event: Default Thumbnail");
     // create default logo in cloudinary
