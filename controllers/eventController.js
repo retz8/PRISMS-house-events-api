@@ -39,8 +39,8 @@ const createNewEvent = async (req, res) => {
     slug,
   } = req.body;
 
-  console.log("Creatting...");
-  console.log(req.body);
+  // console.log("Creatting...");
+  // console.log(req.body);
 
   if (!title || !slug) {
     return res.status(400).json({ error: "Title and Slug are required" });
@@ -78,15 +78,15 @@ const createNewEvent = async (req, res) => {
   };
 
   let newThumbnail = thumbnail;
-  console.log(defaultThumbnail);
-  console.log(newThumbnail);
+  // console.log(defaultThumbnail);
+  // console.log(newThumbnail);
   if (isEqual(thumbnail, defaultThumbnail)) {
-    console.log("Event: Default Thumbnail");
+    //console.log("Event: Default Thumbnail");
     // create default logo in cloudinary
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       defaultThumbnail.url
     );
-    console.log("default thumbnail uploaded");
+    //console.log("default thumbnail uploaded");
     newThumbnail = { url: secure_url, public_id };
   }
 
@@ -215,8 +215,8 @@ const getFilteredEvents = async (req, res) => {
     .sort({ createdAt: -1 })
     .skip(parseInt(pageNum) * parseInt(limit))
     .limit(parseInt(limit));
-  console.log("find: ");
-  console.log(events);
+  // console.log("find: ");
+  // console.log(events);
 
   const eventCount = await Event.countDocuments();
 

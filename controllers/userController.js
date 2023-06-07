@@ -67,7 +67,7 @@ const createNewUserDev = async (req, res) => {
 const deleteAllDevUsers = async (req, res) => {
   const users = await User.find({ googleId: "dev" }).exec();
 
-  console.log(users);
+  // console.log(users);
   users.map(async (user) => {
     const { result } = await cloudinary.uploader.destroy(
       user.profilePic.public_id
@@ -79,7 +79,7 @@ const deleteAllDevUsers = async (req, res) => {
   try {
     const deletedUsers = await User.deleteMany({ googleId: { $in: "dev" } });
 
-    console.log(deletedUsers);
+    // console.log(deletedUsers);
 
     res.status(200).json({ message: `Deleted Dev users.` });
   } catch (err) {
@@ -213,7 +213,7 @@ const updateUser = async (req, res) => {
   user.role = role;
   user.house = house;
   user.profilePic = profilePic;
-  console.log(profilePic);
+  //console.log(profilePic);
 
   try {
     const updatedUser = await user.save();
@@ -241,7 +241,7 @@ const deleteUser = async (req, res) => {
         .json({ error: "Failed to remove events written by user" });
     }
   }
-  console.log("check");
+  //console.log("check");
 
   const user = await User.findById(userId).exec();
   if (!user) {
@@ -255,7 +255,7 @@ const deleteUser = async (req, res) => {
   if (result !== "ok") {
     return res.status(404).json({ error: "Could not remove user" });
   }
-  console.log("find by id and delete");
+  //console.log("find by id and delete");
   const deleteResult = await User.findByIdAndDelete(userId);
   res.json({ message: `User ${userId} removed successfully` });
 };
