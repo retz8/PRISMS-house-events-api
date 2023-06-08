@@ -182,21 +182,21 @@ const updateUser = async (req, res) => {
     return res.status(409).json({ error: "Duplicate user" });
   }
 
-  if (role === "HouseLeader") {
-    if (grade !== "12" && grade !== "Faculty") {
-      return res
-        .status(400)
-        .json({ error: "House Leader should be Faculty member or Senior" });
-    }
-    const roleDuplicate = await User.findOne({
-      house: house,
-      role: "HouseLeader",
-      grade: grade === "Faculty" ? "Faculty" : "12",
-    });
-    if (roleDuplicate._id !== userId) {
-      return res.status(409).json({ error: "Duplicate House Leader" });
-    }
-  }
+  // if (role === "HouseLeader") {
+  //   if (grade !== "12" && grade !== "Faculty") {
+  //     return res
+  //       .status(400)
+  //       .json({ error: "House Leader should be Faculty member or Senior" });
+  //   }
+  //   const roleDuplicate = await User.findOne({
+  //     house: house,
+  //     role: "HouseLeader",
+  //     grade: grade === "Faculty" ? "Faculty" : "12",
+  //   });
+  //   if (roleDuplicate._id !== userId) {
+  //     return res.status(409).json({ error: "Duplicate House Leader" });
+  //   }
+  // }
 
   const public_id = user.profilePic.public_id;
   if (public_id && profilePic.public_id !== public_id) {
