@@ -67,7 +67,7 @@ const createNewUserDev = async (req, res) => {
 const deleteAllDevUsers = async (req, res) => {
   const users = await User.find({ googleId: "dev" }).exec();
 
-  console.log(users);
+  // console.log(users);
   users.map(async (user) => {
     const { result } = await cloudinary.uploader.destroy(
       user.profilePic.public_id
@@ -79,7 +79,7 @@ const deleteAllDevUsers = async (req, res) => {
   try {
     const deletedUsers = await User.deleteMany({ googleId: { $in: "dev" } });
 
-    console.log(deletedUsers);
+    // console.log(deletedUsers);
 
     res.status(200).json({ message: `Deleted Dev users.` });
   } catch (err) {
@@ -172,7 +172,7 @@ const updateUser = async (req, res) => {
     return res.status(400).json({ error: "User not found" });
   }
 
-  //check for duplicate
+  // check for duplicate
   const duplicate = await User.findOne({ email })
     .collation({ locale: "en", strength: 2 })
     .lean()
@@ -182,21 +182,21 @@ const updateUser = async (req, res) => {
     return res.status(409).json({ error: "Duplicate user" });
   }
 
-  if (role === "HouseLeader") {
-    if (grade !== "12" && grade !== "Faculty") {
-      return res
-        .status(400)
-        .json({ error: "House Leader should be Faculty member or Senior" });
-    }
-    const roleDuplicate = await User.findOne({
-      house: house,
-      role: "HouseLeader",
-      grade: grade === "Faculty" ? "Faculty" : "12",
-    });
-    if (roleDuplicate) {
-      return res.status(409).json({ error: "Duplicate House Leader" });
-    }
-  }
+  // if (role === "HouseLeader") {
+  //   if (grade !== "12" && grade !== "Faculty") {
+  //     return res
+  //       .status(400)
+  //       .json({ error: "House Leader should be Faculty member or Senior" });
+  //   }
+  //   const roleDuplicate = await User.findOne({
+  //     house: house,
+  //     role: "HouseLeader",
+  //     grade: grade === "Faculty" ? "Faculty" : "12",
+  //   });
+  //   if (roleDuplicate._id !== userId) {
+  //     return res.status(409).json({ error: "Duplicate House Leader" });
+  //   }
+  // }
 
   const public_id = user.profilePic.public_id;
   if (public_id && profilePic.public_id !== public_id) {
@@ -213,7 +213,7 @@ const updateUser = async (req, res) => {
   user.role = role;
   user.house = house;
   user.profilePic = profilePic;
-  console.log(profilePic);
+  //console.log(profilePic);
 
   try {
     const updatedUser = await user.save();
@@ -227,20 +227,21 @@ const updateUser = async (req, res) => {
 // @route   DELETE /api/user/delete/:userId
 const deleteUser = async (req, res) => {
   const { userId } = req.params;
-
+  console.log(userId);
   if (!isValidObjectId(userId)) {
     return res.status(401).json({ error: "Invalid Request" });
   }
 
-  const events = await Event.find({ author: id }).lean().exec();
+  const events = await Event.find({ author: userId }).lean().exec();
   if (events) {
-    const { error } = await Event.deleteMany({ author: id });
+    const { error } = await Event.deleteMany({ author: userId });
     if (error) {
       return res
         .status(400)
         .json({ error: "Failed to remove events written by user" });
     }
   }
+  //console.log("check");
 
   const user = await User.findById(userId).exec();
   if (!user) {
@@ -254,8 +255,8 @@ const deleteUser = async (req, res) => {
   if (result !== "ok") {
     return res.status(404).json({ error: "Could not remove user" });
   }
-
-  await User.findByIdAndDelete(userId);
+  //console.log("find by id and delete");
+  const deleteResult = await User.findByIdAndDelete(userId);
   res.json({ message: `User ${userId} removed successfully` });
 };
 

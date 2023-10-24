@@ -6,25 +6,31 @@ const cors = require("cors");
 const passport = require("passport"); // for google auth
 const session = require("express-session"); // for google auth, create session
 const connectDB = require("./config/dbConn");
-const morgan = require("morgan");
+const morgan = require("morgan"); // comment for prdouction
+const corsOptions = require("./config/corsOptions");
 
+const authRouters = require("./routers/authRouters");
 const userRouters = require("./routers/userRouters");
 const houseRouters = require("./routers/houseRouters");
 const eventRouters = require("./routers/eventRouters");
-const authRouters = require("./routers/authRouters");
 const helperRouters = require("./routers/helperRouters");
 // -----------------------------------------------------------------------------------
 // define important constants:
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-console.log(`Mode: ${process.env.NODE_ENV}`);
+// console.log(`Mode: ${process.env.NODE_ENV}`);
 connectDB();
 
 // MIDDLEWARES
 // -----------------------------------------------------------------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+if (process.env.NODE_ENV === "production") {
+  app.use(morgan("combined"));
+} else {
+  app.use(morgan("dev"));
+}
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -36,10 +42,10 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    // cookie: {secure: true}, // uncomment this line for production
+    cookie: { sameSite: "none", secure: true, maxAge: 1000 * 60 * 60 * 24 * 7 }, // uncomment this line for production
   })
 );
-app.use(morgan("dev"));
+// app.use(morgan("dev"));
 
 app.use(passport.initialize());
 app.use(passport.session()); // to use req.user from session
@@ -50,6 +56,9 @@ require("./config/passport")(passport);
 
 // ROUTES
 // -----------------------------------------------------------------------------------
+app.get("^/$|/index(.html)?", (req, res) => {
+  res.send("hello");
+});
 // 1. /auth (due to passport, didn't separated into routers)
 // @desc    google Login
 // @route   GET /auth/google
@@ -62,9 +71,12 @@ app.get(
 // @route   GET /auth/google/callback
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/login", session: true }),
+  passport.authenticate("google", {
+    failureRedirect: "http://localhost:3000",
+    session: true,
+  }),
   function (req, res) {
-    res.redirect("http://localhost:3000/");
+    res.redirect("http://localhost:3000");
   }
 );
 
@@ -76,7 +88,7 @@ app.get("/auth/logout", (req, res) => {
       return next(err);
     }
     //res.send("done");
-    res.redirect("http://localhost:3000/");
+    res.redirect("http://localhost:3000");
   });
 });
 
@@ -87,8 +99,9 @@ app.get("/auth/user", (req, res) => {
   res.send(req.user);
 });
 
-// 1.5 /api/auth for mobile
+// 1.5 Mobile App Auth routers: /api/auth
 app.use("/api/auth", authRouters);
+
 // 2. /api/user
 app.use("/api/user", userRouters);
 // 3. /api/house

@@ -7,12 +7,14 @@ const getBaseInfo = require("../helpers/getBaseInfo");
 // @desc    Create new user
 // @route   POST /api/auth/create
 const createNewUser = async (req, res) => {
-  console.log(req.body);
   const { user } = req.body;
+
+  const domain = "prismsus.org";
+
   const currentUser = await User.findOne({ googleId: user.id }).lean().exec();
 
-  if (!currentUser) {
-    // create new user
+  if (!currentUser && user.hd === domain) {
+    // create new user with baseinfo
     const { grade, role, house } = getBaseInfo(
       (username = user.name),
       (email = user.email)
@@ -45,17 +47,18 @@ const createNewUser = async (req, res) => {
       role: createdUser.role,
       house: createdUser.house,
     });
+  } else {
+    res.json({
+      id: currentUser._id,
+      displayName: currentUser.displayName,
+      email: currentUser.email,
+      profilePic: currentUser.profilePic,
+      introduction: currentUser.introduction,
+      grade: currentUser.grade,
+      role: currentUser.role,
+      house: currentUser.house,
+    });
   }
-  res.json({
-    id: currentUser._id,
-    displayName: currentUser.displayName,
-    email: currentUser.email,
-    profilePic: currentUser.profilePic,
-    introduction: currentUser.introduction,
-    grade: currentUser.grade,
-    role: currentUser.role,
-    house: currentUser.house,
-  });
 };
 
 module.exports = {

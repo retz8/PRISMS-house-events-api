@@ -8,6 +8,7 @@ function getBaseInfo(username, email) {
   console.log(`username: ${username} email: ${email}`);
   const myMap = new Map(Object.entries(obj));
 
+  // handle exceptions
   if (email === "ekkicb71@gmail.com") {
     return { grade: "Admin", role: "Admin", house: "Albemarle" };
   } else if (email === "tiger.gao@prismsus.org") {
@@ -16,6 +17,8 @@ function getBaseInfo(username, email) {
     return { grade: "Faculty", role: "HouseLeader", house: "Hobler" };
   } else if (email === "kenneth.jones@prismsus.org") {
     return { grade: "Faculty", role: "Admin", house: "None" };
+  } else if (email === "adrian.lopezdenis@prismsus.org") {
+    return { grade: "Faculty", role: "Faculty", house: "Ettl" };
   }
 
   if (myMap.has(email)) {
@@ -37,4 +40,4 @@ function getBaseInfo(username, email) {
   }
 }
 
-module.exports = getBaseInfo;
+// module.exports = getBaseInfo;

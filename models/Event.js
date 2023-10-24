@@ -91,12 +91,15 @@ const EventSchema = new mongoose.Schema(
       type: Object,
       active: {
         type: Boolean, // postedDate에 따라 결정되는 요소
+        default: false,
       },
       waitingResult: {
         type: Boolean,
+        default: true,
       },
       forceActive: {
         type: Boolean, // 강제적으로 껐다 키는 요소
+        default: false,
       },
       postedDate: {
         type: Date,
@@ -106,7 +109,6 @@ const EventSchema = new mongoose.Schema(
         active: false,
         waitingResult: true,
         forceActive: false,
-        postedDate: new Date(),
       },
     },
     slug: {

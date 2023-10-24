@@ -39,6 +39,9 @@ const createNewEvent = async (req, res) => {
     slug,
   } = req.body;
 
+  // console.log("Creatting...");
+  // console.log(req.body);
+
   if (!title || !slug) {
     return res.status(400).json({ error: "Title and Slug are required" });
   }
@@ -75,11 +78,15 @@ const createNewEvent = async (req, res) => {
   };
 
   let newThumbnail = thumbnail;
+  // console.log(defaultThumbnail);
+  // console.log(newThumbnail);
   if (isEqual(thumbnail, defaultThumbnail)) {
+    //console.log("Event: Default Thumbnail");
     // create default logo in cloudinary
     const { secure_url, public_id } = await cloudinary.uploader.upload(
       defaultThumbnail.url
     );
+    //console.log("default thumbnail uploaded");
     newThumbnail = { url: secure_url, public_id };
   }
 
@@ -97,11 +104,20 @@ const createNewEvent = async (req, res) => {
   else newEvent.isForAll = true;
 
   const curDate = new Date();
+  // console.log(endDate);
+  // console.log(typeof endDate);
+  // console.log(curDate);
+  // console.log(typeof curDate);
+  // console.log(
+  //   endDate.toLocaleString("en-US", { timeZone: "America/New_York" })
+  // );
+  // console.log(
+  //   curDate.toLocaleString("en-US", { timeZone: "America/New_York" })
+  // );
 
-  if (
-    endDate.toLocaleString("en-US", { timeZone: "America/New_York" }) <
-    curDate.toLocaleString("en-US", { timeZone: "America/New_York" })
-  ) {
+  if (new Date(endDate) < curDate) {
+    // console.log("check");
+
     newEvent.upcoming = false;
   }
 
@@ -116,7 +132,48 @@ const createNewEvent = async (req, res) => {
 // @desc    Get all events
 // @route   GET /api/event/events
 const getAllEvents = async (req, res) => {
-  const events = await Event.find().lean();
+  const events = await Event.find().sort({ createdAt: -1 }).lean();
+  if (!events?.length) {
+    return res.status(400).json({ error: "No Events Found" });
+  }
+
+  res.json({
+    events: events.map((event) => ({
+      id: event._id,
+      title: event.title,
+      author: event.author,
+      host: event.host,
+      tier: event.tier,
+      thumbnail: event.thumbnail,
+      summary: event.summary,
+      content: event.content,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      signUpLink: event.signUpLink,
+      participants: event.participants,
+      isForAll: event.isForAll,
+      adminNote: event.adminNote ? event.adminNote : "",
+      result: event.result ? event.result : {},
+      upcoming: event.upcoming,
+      resultPosted: event.resultPosted,
+      slug: event.slug,
+      createdAt: event.createdAt,
+    })),
+  });
+};
+
+// @desc    Get events by page no and limit
+// @route   GET /api/event/events-page
+const getEvents = async (req, res) => {
+  const { pageNum, limit } = req.query;
+
+  const events = await Event.find({})
+    .sort({ createdAt: -1 })
+    .skip(parseInt(pageNum) * parseInt(limit))
+    .limit(parseInt(limit));
+
+  const eventCount = await Event.countDocuments();
+
   if (!events?.length) {
     return res.status(400).json({ error: "No Events Found" });
   }
@@ -142,18 +199,24 @@ const getAllEvents = async (req, res) => {
       resultPosted: event.resultPosted,
       slug: event.slug,
     })),
+    eventCount,
   });
 };
 
-// @desc    Get events by page no and limit
-// @route   GET /api/event/events-page
-const getEvents = async (req, res) => {
+// @desc    Get events (for leadeboard, that has result) by page no and limit
+// @route   GET /api/event/events-filter
+const getFilteredEvents = async (req, res) => {
   const { pageNum, limit } = req.query;
 
-  const events = await Event.find({})
+  const events = await Event.find({
+    upcoming: false,
+    "resultPosted.waitingResult": false,
+  })
     .sort({ createdAt: -1 })
     .skip(parseInt(pageNum) * parseInt(limit))
     .limit(parseInt(limit));
+  // console.log("find: ");
+  // console.log(events);
 
   const eventCount = await Event.countDocuments();
 
@@ -246,8 +309,8 @@ const updateEvent = async (req, res) => {
     resultPosted,
     slug,
   } = req.body;
-
-  // console.log(req.body);
+  console.log("Updating Object: ");
+  console.log(req.body);
 
   if (!isValidObjectId(eventId)) {
     return res.status(401).json({ error: "Invalid Request" });
@@ -273,6 +336,7 @@ const updateEvent = async (req, res) => {
 
   const public_id = event.thumbnail?.public_id;
   if (public_id && thumbnail.public_id !== public_id) {
+    // different thumbnail
     const { result } = await cloudinary.uploader.destroy(public_id);
     if (result !== "ok") {
       return res.status(404).json({ error: "Could not remove thumbnail" });
@@ -297,6 +361,7 @@ const updateEvent = async (req, res) => {
   if (resultPosted) event.resultPosted = resultPosted;
   event.slug = slug;
 
+  console.log("Updated Event: ");
   console.log(event);
 
   Event.updateOne({ _id: eventId }, event)
@@ -469,7 +534,6 @@ const getPastEvents = async (req, res) => {
 // @route   DELETE /api/event/delete/:eventId
 const deleteEvent = async (req, res) => {
   const { eventId } = req.params;
-  console.log(eventId);
   if (!isValidObjectId(eventId)) {
     return res.status(401).json({ error: "Invalid Request" });
   }
@@ -495,6 +559,7 @@ module.exports = {
   createNewEvent,
   getAllEvents,
   getEvents,
+  getFilteredEvents,
   getEvent,
   updateEvent,
   getUpcomingEvents,

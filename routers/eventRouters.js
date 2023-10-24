@@ -5,6 +5,7 @@ const eventController = require("../controllers/eventController");
 
 router.get("/events", eventController.getAllEvents);
 router.get("/events-page", eventController.getEvents);
+router.get("/events-filter", eventController.getFilteredEvents);
 router.get("/:eventId", eventController.getEvent);
 
 router.get("/upcoming", eventController.getUpcomingEvents);

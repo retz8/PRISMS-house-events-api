@@ -157,4 +157,10 @@ const createBaseInfoMap = () => {
   });
 };
 
-module.exports = createBaseInfoMap;
+const createBaseInfoMapTest = () => {
+  console.log("check");
+};
+
+module.exports = createBaseInfoMapTest;
+
+// module.exports = createBaseInfoMap;
